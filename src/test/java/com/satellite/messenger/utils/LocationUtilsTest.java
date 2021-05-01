@@ -4,12 +4,10 @@ import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
 import org.springframework.data.util.Pair;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static java.lang.Math.round;
-import static java.lang.Math.scalb;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertThrows;
 
 @Test
 public class LocationUtilsTest {
@@ -59,7 +57,24 @@ public class LocationUtilsTest {
     public void intersectIdenticalCircles() {
         final Circle circleA = new Circle(new Point(-500, -200), new Distance(200));
         final Circle circleB = new Circle(new Point(-500, -200), new Distance(200));
+        assertThrows(IllegalArgumentException.class, () -> LocationUtils.intersectTwoCircles(circleA, circleB));
         LocationUtils.intersectTwoCircles(circleA, circleB);
+    }
+
+    public void intersectThreeCirclesOk() {
+        final Circle circleA = new Circle(new Point(-500, -200), new Distance(600));
+        final Circle circleB = new Circle(new Point(100, -100), new Distance(115.5));
+        final Circle circleC = new Circle(new Point(170, -300), new Distance(109.856054));
+        final Point result = LocationUtils.intersectThreeCircles(circleA, circleB, circleC);
+        assertEquals(LocationUtils.round(result.getX(), 6), 99.799763);
+        assertEquals(LocationUtils.round(result.getY(), 6), -215.499826);
+    }
+
+    public void intersectThreeCirclesNoIntersected() {
+        final Circle circleA = new Circle(new Point(-500, -200), new Distance(600));
+        final Circle circleB = new Circle(new Point(100, -100), new Distance(115.5));
+        final Circle circleC = new Circle(new Point(170, -300), new Distance(250));
+        assertThrows(IllegalArgumentException.class, () -> LocationUtils.intersectThreeCircles(circleA, circleB, circleC));
     }
 
 }

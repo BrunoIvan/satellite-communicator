@@ -11,11 +11,11 @@ import static java.lang.Math.*;
 
 public class LocationUtils {
 
-    public static Double getDistance(final Point pointA, final Point pointB) {
-        final Double xB = pointB.getX();
-        final Double yB = pointB.getY();
-        final Double xA = pointA.getX();
-        final Double yA = pointA.getY();
+    public static double getDistance(final Point pointA, final Point pointB) {
+        final double xB = pointB.getX();
+        final double yB = pointB.getY();
+        final double xA = pointA.getX();
+        final double yA = pointA.getY();
         return sqrt(pow((xB - xA), 2) + pow((yB - yA), 2));
     }
 
@@ -98,5 +98,25 @@ public class LocationUtils {
         final Point jPoint = new Point(xJPoint, yJPoint);
 
         return orderByDegrees(iPoint, jPoint, aCircle);
+    }
+
+    private static boolean provePointIntersect(final Point point, final Circle circle) {
+        final double distance = getDistance(point, circle.getCenter());
+        return round(distance, 6) == round(circle.getRadius().getValue(), 6);
+    }
+
+    /**
+     * Returns one point where three circles are intersected.
+     */
+    public static Point intersectThreeCircles(final Circle aCircle, final Circle bCircle, final Circle cCircle) {
+        final Pair<Point, Point> possibleResults = intersectTwoCircles(aCircle, bCircle);
+
+        if (provePointIntersect(possibleResults.getFirst(), cCircle)) {
+            return possibleResults.getFirst();
+        } else if (provePointIntersect(possibleResults.getSecond(), cCircle)) {
+            return possibleResults.getSecond();
+        } else {
+            throw new IllegalArgumentException("Could not be able to find any intersection");
+        }
     }
 }

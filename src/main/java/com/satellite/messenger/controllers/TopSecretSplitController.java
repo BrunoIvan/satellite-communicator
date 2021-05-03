@@ -1,7 +1,6 @@
 package com.satellite.messenger.controllers;
 
 import com.satellite.messenger.pojo.api.TopSecretReqItemTO;
-import com.satellite.messenger.pojo.api.TopSecretReqTO;
 import com.satellite.messenger.pojo.api.TopSecretResTO;
 import com.satellite.messenger.services.TopSecretService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +24,14 @@ public class TopSecretSplitController {
         log.info("Incoming request for add an an item to decode a request '{}'", request);
         topSecretService.addItem(request);
         log.info("Incoming request for add an an item was Ok");
+    }
+
+    @GetMapping
+    public TopSecretResTO decode() {
+        log.info("Incoming request to decode message with saved distances");
+        final TopSecretResTO response = topSecretService.decodeFromStore();
+        log.info("Message decoding was Ok");
+        return response;
     }
 
 }

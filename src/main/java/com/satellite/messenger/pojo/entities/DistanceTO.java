@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DistanceTO extends BaseEntityTO {
 
-    private double distance;
+    private double value;
 
     private List<String> words;
 

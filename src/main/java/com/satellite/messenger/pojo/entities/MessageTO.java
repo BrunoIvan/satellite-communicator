@@ -1,10 +1,7 @@
 package com.satellite.messenger.pojo.entities;
 
 import com.satellite.messenger.pojo.enums.MessageStatusType;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 

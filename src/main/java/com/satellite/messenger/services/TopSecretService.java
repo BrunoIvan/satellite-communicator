@@ -82,15 +82,54 @@ public class TopSecretService {
         log.info("New distance has id '{}'", distance.getId());
     }
 
-    private void checkAlreadyThree(MessageTO message) {
+    private void checkAlreadyThree(final MessageTO message) {
         if (message.getDistances().size() == 3) {
             throw new IllegalArgumentException("Distances are already three");
         }
     }
 
-    private void checkAlreadyUploaded(TopSecretReqItemTO request, MessageTO message) {
+    private void checkLessThanThree(final MessageTO message) {
+        if (message.getDistances().size() < 3) {
+            throw new IllegalArgumentException("No enough distances to decode a message");
+        }
+    }
+
+    private void checkAlreadyUploaded(final TopSecretReqItemTO request, final MessageTO message) {
         if (message.getDistances().stream().anyMatch(it -> it.getSatellite().getName().equals(request.getName()))) {
             throw new IllegalArgumentException("Distance is already uploaded");
         }
+    }
+
+    public TopSecretResTO decodeFromStore() {
+        final MessageTO unsolved = messageStore.findUnsolved()
+                .stream().findFirst().orElseThrow(() -> new IllegalArgumentException("No distances to decode a message"));
+
+        checkLessThanThree(unsolved);
+
+        final List<SatelliteTO> satellites = satelliteStore.getAll();
+
+        final Point position = getPosition(unsolved, satellites);
+        final String message = getMessage(unsolved);
+
+        return new TopSecretResTO(new TopSecretResPosTO(position.getX(), position.getY()), message);
+    }
+
+    private String getMessage(MessageTO unsolved) {
+        final List<String> message0 = unsolved.getDistances().get(0).getWords();
+        final List<String> message1 = unsolved.getDistances().get(1).getWords();
+        final List<String> message2 = unsolved.getDistances().get(2).getWords();
+        return MessageUtils.getMessage(message0, message1, message2);
+    }
+
+    private Point getPosition(MessageTO unsolved, List<SatelliteTO> satellites) {
+        final List<Circle> circles = unsolved.getDistances().stream()
+                .map(distance -> {
+                    final SatelliteTO sat = satellites.stream().filter(it -> it.getName().equals(distance.getSatellite().getName())).findFirst()
+                            .orElseThrow(() -> new IllegalStateException(String.format("Could not found satellite '%s'", distance.getSatellite().getName())));
+
+                    return new Circle(new Point(sat.getXPosition(), sat.getYPosition()), new Distance(distance.getValue()));
+                }).collect(Collectors.toList());
+
+        return intersectThreeCircles(circles.get(0), circles.get(1), circles.get(2));
     }
 }

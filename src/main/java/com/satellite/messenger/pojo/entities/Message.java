@@ -17,7 +17,7 @@ public class Message extends BaseEntity {
     @Column
     private String value;
 
-    @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Distance> distances;
 
     @Column

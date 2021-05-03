@@ -7,8 +7,6 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.List;
 
-import static javax.persistence.FetchType.LAZY;
-
 @EqualsAndHashCode(callSuper = true)
 @ToString
 @Data
@@ -18,6 +16,8 @@ public class Distance extends BaseEntity {
     @Column(nullable = false)
     private double distance;
 
+    @ElementCollection
+    @CollectionTable(name="word", joinColumns = @JoinColumn(name="distance_id"))
     @Column
     private List<String> words;
 

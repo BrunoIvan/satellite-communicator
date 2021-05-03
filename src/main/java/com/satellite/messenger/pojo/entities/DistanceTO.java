@@ -11,7 +11,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 @Data
-@Entity(name = "distance")
 @AllArgsConstructor
 public class DistanceTO extends BaseEntityTO {
 

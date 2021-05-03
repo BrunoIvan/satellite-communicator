@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.satellite.messenger.pojo.enums.MessageStatusType.UNCOMPLETED;
+import static com.satellite.messenger.pojo.enums.MessageStatusType.*;
 import static com.satellite.messenger.utils.LocationUtils.intersectThreeCircles;
 
 @Service
@@ -108,10 +108,24 @@ public class TopSecretService {
 
         final List<SatelliteTO> satellites = satelliteStore.getAll();
 
-        final Point position = getPosition(unsolved, satellites);
-        final String message = getMessage(unsolved);
+        return doDecodeFromStore(unsolved, satellites);
+    }
 
-        return new TopSecretResTO(new TopSecretResPosTO(position.getX(), position.getY()), message);
+    private TopSecretResTO doDecodeFromStore(MessageTO unsolved, List<SatelliteTO> satellites) {
+        try {
+            final Point position = getPosition(unsolved, satellites);
+            final String message = getMessage(unsolved);
+
+            unsolved.setStatus(SOLVED_OK);
+            unsolved.setValue(message);
+            return new TopSecretResTO(new TopSecretResPosTO(position.getX(), position.getY()), message);
+        } catch (final IllegalArgumentException e) {
+            unsolved.setStatus(SOLVED_FAILED);
+            unsolved.setFailedMessage(e.getMessage());
+            throw e;
+        } finally {
+            messageStore.save(unsolved);
+        }
     }
 
     private String getMessage(MessageTO unsolved) {

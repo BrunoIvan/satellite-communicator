@@ -8,7 +8,7 @@ Plataforma de la aplicación:
 - Cloud SDK version: 337.0.0,
 
 Cómo ejecutar la aplicacion:
-- Generar el compilado de la aplicación con "mvn clean intall",
+- Generar el compilado de la aplicación con "mvn clean install",
 - Correr la aplicación con "./mvnw spring-boot:run"
 
 Free cloud, incompleta:

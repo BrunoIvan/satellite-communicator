@@ -65,13 +65,11 @@ public class TopSecretService {
 
     public void addItem(final TopSecretReqItemTO request) {
         log.info("Getting satellite with name '{}'", request.getName());
-        final SatelliteTO satellite = satelliteStore.getByName(request.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Satellite was not found"));
+        final SatelliteTO satellite = strictGetSatellite(request);
         log.info("Satellite with name '{}' has id '{}'", request.getName(), satellite.getId());
 
         log.info("Getting uncompleted messaged");
-        final MessageTO message = messageStore.findUncompleted().stream().findFirst()
-                .orElseGet(() -> messageStore.save(MessageTO.builder().status(UNCOMPLETED).build()));
+        final MessageTO message = getOrCreateMessage();
         log.info("Uncompleted messaged has id '{}'", satellite.getId());
 
         checkAlreadyUploaded(request, message);
@@ -80,6 +78,25 @@ public class TopSecretService {
         log.info("Saving new distance");
         final DistanceTO distance = distanceStore.save(new DistanceTO(request.getDistance(), request.getMessage(), satellite, message));
         log.info("New distance has id '{}'", distance.getId());
+
+        setUnsolved(message);
+    }
+
+    private MessageTO getOrCreateMessage() {
+        return messageStore.findUncompleted().stream().findFirst()
+                .orElseGet(() -> messageStore.save(MessageTO.builder().status(UNCOMPLETED).build()));
+    }
+
+    private SatelliteTO strictGetSatellite(TopSecretReqItemTO request) {
+        return satelliteStore.getByName(request.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Satellite was not found"));
+    }
+
+    private void setUnsolved(MessageTO message) {
+        if(message.getDistances().size() == 2) {
+            message.setStatus(UNSOLVED);
+            messageStore.save(message);
+        }
     }
 
     private void checkAlreadyThree(final MessageTO message) {
@@ -101,17 +118,21 @@ public class TopSecretService {
     }
 
     public TopSecretResTO decodeFromStore() {
+        log.info("Finding message with unsolved status type");
         final MessageTO unsolved = messageStore.findUnsolved()
                 .stream().findFirst().orElseThrow(() -> new IllegalArgumentException("No distances to decode a message"));
+        log.info("Unsolved message has id '{}'", unsolved.getId());
 
         checkLessThanThree(unsolved);
 
+        log.info("Getting all satellites");
         final List<SatelliteTO> satellites = satelliteStore.getAll();
+        log.info("All satellites gathered");
 
         return doDecodeFromStore(unsolved, satellites);
     }
 
-    private TopSecretResTO doDecodeFromStore(MessageTO unsolved, List<SatelliteTO> satellites) {
+    private TopSecretResTO doDecodeFromStore(final MessageTO unsolved, final List<SatelliteTO> satellites) {
         try {
             final Point position = getPosition(unsolved, satellites);
             final String message = getMessage(unsolved);
@@ -124,18 +145,19 @@ public class TopSecretService {
             unsolved.setFailedMessage(e.getMessage());
             throw e;
         } finally {
+            log.info("Saving message with it '{}'. Status '{}'", unsolved.getId(), unsolved.getStatus());
             messageStore.save(unsolved);
         }
     }
 
-    private String getMessage(MessageTO unsolved) {
+    private String getMessage(final MessageTO unsolved) {
         final List<String> message0 = unsolved.getDistances().get(0).getWords();
         final List<String> message1 = unsolved.getDistances().get(1).getWords();
         final List<String> message2 = unsolved.getDistances().get(2).getWords();
         return MessageUtils.getMessage(message0, message1, message2);
     }
 
-    private Point getPosition(MessageTO unsolved, List<SatelliteTO> satellites) {
+    private Point getPosition(final MessageTO unsolved, final List<SatelliteTO> satellites) {
         final List<Circle> circles = unsolved.getDistances().stream()
                 .map(distance -> {
                     final SatelliteTO sat = satellites.stream().filter(it -> it.getName().equals(distance.getSatellite().getName())).findFirst()

@@ -15,12 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.satellite.messenger.utils.LocationUtils.round;
+import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -46,6 +47,11 @@ public class TopSecretServiceTest {
     @BeforeClass
     public void init() {
         openMocks(this);
+    }
+
+    @BeforeMethod
+    public void beforeTest() {
+        reset(distanceStore, messageStore, satelliteStore);
     }
 
     public void decodeOk() {
@@ -75,7 +81,7 @@ public class TopSecretServiceTest {
         item.setName("Test C");
 
         final MessageTO uncompleted = EASY_RANDOM.nextObject(MessageTO.class);
-        uncompleted.setDistances(EASY_RANDOM.objects(DistanceTO.class, 2).collect(Collectors.toList()));
+        uncompleted.setDistances(EASY_RANDOM.objects(DistanceTO.class, 2).collect(toList()));
         uncompleted.getDistances().get(0).getSatellite().setName("Test A");
         uncompleted.getDistances().get(1).getSatellite().setName("Test B");
         when(messageStore.findUncompleted()).thenReturn(newArrayList(uncompleted));
@@ -103,7 +109,23 @@ public class TopSecretServiceTest {
 
         when(messageStore.findUncompleted()).thenReturn(newArrayList());
 
-        final MessageTO uncompleted = mockSaveUncompleted();
+        final MessageTO uncompleted = mockSaveUncompleted(1);
+
+        mockSaveDistance();
+
+        topSecretService.addItem(item);
+
+        verify(distanceStore).save(eq(new DistanceTO(item.getDistance(), item.getMessage(), satellite, uncompleted)));
+        verify(messageStore).save(any(MessageTO.class));
+    }
+
+    public void addItemThenChangeMessageStatus() {
+        final TopSecretReqItemTO item = EASY_RANDOM.nextObject(TopSecretReqItemTO.class);
+        item.setName("Test C");
+
+        final SatelliteTO satellite = mockGetSatellite();
+
+        final MessageTO uncompleted = mockGetUncompleted(2);
 
         mockSaveDistance();
 
@@ -118,8 +140,16 @@ public class TopSecretServiceTest {
         when(distanceStore.save(any())).thenReturn(saved);
     }
 
-    private MessageTO mockSaveUncompleted() {
+    private MessageTO mockGetUncompleted(final int distancesSize) {
         final MessageTO uncompleted = EASY_RANDOM.nextObject(MessageTO.class);
+        uncompleted.setDistances(EASY_RANDOM.objects(DistanceTO.class, distancesSize).collect(toList()));
+        when(messageStore.findUncompleted()).thenReturn(newArrayList(uncompleted));
+        return uncompleted;
+    }
+
+    private MessageTO mockSaveUncompleted(final int distancesSize) {
+        final MessageTO uncompleted = EASY_RANDOM.nextObject(MessageTO.class);
+        uncompleted.setDistances(EASY_RANDOM.objects(DistanceTO.class, distancesSize).collect(toList()));
         when(messageStore.save(any())).thenReturn(uncompleted);
         return uncompleted;
     }
@@ -150,7 +180,7 @@ public class TopSecretServiceTest {
 
     private void mockGetUncompletedMessage() {
         final MessageTO uncompleted = EASY_RANDOM.nextObject(MessageTO.class);
-        uncompleted.setDistances(EASY_RANDOM.objects(DistanceTO.class, 3).collect(Collectors.toList()));
+        uncompleted.setDistances(EASY_RANDOM.objects(DistanceTO.class, 3).collect(toList()));
         uncompleted.getDistances().get(0).getSatellite().setName("Test A");
         uncompleted.getDistances().get(1).getSatellite().setName("Test B");
         uncompleted.getDistances().get(1).getSatellite().setName("Test C");

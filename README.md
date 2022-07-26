@@ -11,7 +11,3 @@ Cómo ejecutar la aplicacion:
 - Generar el compilado de la aplicación con "mvn clean install",
 - Correr la aplicación con "./mvnw spring-boot:run"
 - Nota: Es necesario insertar en la tabla "satellite" al menos tres registros para que funcione el servicio de decodificación asíncrona,
-
-Free cloud, incompleta:
-- Url: https://satellite-messenger.rj.r.appspot.com,
-- Punto pendiente: Error de dialecto no definido al momento de realizar el deploy en la nube,

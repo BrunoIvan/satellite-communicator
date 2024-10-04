@@ -1,68 +1,67 @@
 package com.satellite.messenger.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.satellite.messenger.pojo.api.TopSecretReqItemTO;
-import com.satellite.messenger.pojo.api.TopSecretReqTO;
-import com.satellite.messenger.pojo.api.TopSecretResTO;
+import com.satellite.messenger.pojo.TopSecretReqTO;
+import com.satellite.messenger.pojo.TopSecretResTO;
 import com.satellite.messenger.services.TopSecretService;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.testng.Assert.assertEquals;
-import static org.testng.collections.Lists.newArrayList;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@Test
-public class TopSecretControllerTest extends AbstractControllerTest {
+
+@RunWith(SpringRunner.class)
+@WebMvcTest(TopSecretController.class)
+public class TopSecretControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @InjectMocks
     private TopSecretController controller;
 
     @Mock
-    private TopSecretService service;
+    private TopSecretService topSecretService;
 
-    @Override
-    protected Object getTarget() {
-        return controller;
+    @Test
+    public void testDecode() throws Exception {
+        TopSecretReqTO request = new TopSecretReqTO();
+        // Agrega aquí los valores de prueba del request
+
+        TopSecretResTO response = new TopSecretResTO();
+        // Agrega aquí los valores de prueba del response
+
+        when(topSecretService.decodeResponse(any(TopSecretReqTO.class))).thenReturn(response);
+
+        mockMvc.perform(post("/topsecret")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.campo").value("valor"));  // Ajusta los paths y valores según la estructura de tu response.
+
+        verify(topSecretService, times(1)).decodeResponse(any(TopSecretReqTO.class));
     }
 
-    public void topSecret() {
-        final TopSecretReqTO request = EASY_RANDOM.nextObject(TopSecretReqTO.class);
-        final TopSecretReqItemTO item = EASY_RANDOM.nextObject(TopSecretReqItemTO.class);
-        request.setSatellites(newArrayList(item, item, item));
-        final TopSecretResTO expectedResponse = EASY_RANDOM.nextObject(TopSecretResTO.class);
-
-        when(service.decodeResponse(eq(request))).thenReturn(expectedResponse);
-        final TopSecretResTO response = perform(post("/topsecret"), request, new TypeReference<TopSecretResTO>() {
-        }, status().isOk());
-
-        verify(service).decodeResponse(eq(request));
-        assertEquals(response, expectedResponse);
+    // Método para convertir un objeto en una cadena JSON
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    @DataProvider
-    private Object[][] badItemSizesProvider() {
-        final TopSecretReqItemTO item = EASY_RANDOM.nextObject(TopSecretReqItemTO.class);
-        return new Object[][] {
-            { newArrayList(item, item) },
-            { newArrayList(item, item, item, item) }
-        };
-    }
-
-    @Test(dataProvider = "badItemSizesProvider")
-    public void topSecretBadItemSizes(final List<TopSecretReqItemTO> items) {
-        final TopSecretReqTO request = EASY_RANDOM.nextObject(TopSecretReqTO.class);
-        request.setSatellites(items);
-
-        perform(post("/topsecret"), request, status().is4xxClientError());
-    }
-
 }

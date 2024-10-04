@@ -1,10 +1,10 @@
 package com.satellite.messenger.controllers;
 
-import com.satellite.messenger.pojo.api.TopSecretReqTO;
-import com.satellite.messenger.pojo.api.TopSecretResTO;
+import com.satellite.messenger.pojo.TopSecretReqTO;
+import com.satellite.messenger.pojo.TopSecretResTO;
 import com.satellite.messenger.services.TopSecretService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,16 +14,14 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/topsecret")
-@Slf4j
 public class TopSecretController {
 
-    @Autowired
-    private TopSecretService topSecretService;
+    private static Logger log = LoggerFactory.getLogger(TopSecretController.class);
 
     @PostMapping
     public TopSecretResTO decode(@RequestBody @Valid final TopSecretReqTO request) {
         log.info("Incoming request for decode a message with request '{}'", request);
-        final TopSecretResTO response = topSecretService.decodeResponse(request);
+        final TopSecretResTO response = TopSecretService.decodeResponse(request);
         log.info("Incoming request for decode a message with request was OK");
         return response;
     }

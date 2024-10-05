@@ -1,30 +1,32 @@
 package com.satellite.messenger.utils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.satellite.messenger.utils.exceptions.message.MessageException;
+import com.satellite.messenger.utils.exceptions.message.NoMessageFoundException;
 
-import static java.util.stream.IntStream.range;
+import java.util.*;
 
 public class MessageUtils {
 
-    public static String getMessage(final List<String> aWords, final List<String> bWords, final List<String> cWords) {
-        final List<List<String>> wordsSets = Stream.of(aWords, bWords, cWords)
-                .sorted((i, j) -> i.size() < j.size() ? -1 : 0)
-                .collect(Collectors.toList());
+    protected MessageUtils() {
+    }
+
+    public static String getMessage(
+            final List<String> aWords,
+            final List<String> bWords,
+            final List<String> cWords
+    ) {
+        final List<List<String>> wordsSets = new ArrayList<>(Arrays.asList(aWords, bWords, cWords));
+        wordsSets.sort((i, j) -> i.size() < j.size() ? -1 : 0);
         final List<String> result = new ArrayList<>();
-        range(0, wordsSets.get(0).size())
-                .forEach(index -> {
-                    final Set<String> words = getWordsR(0, index, wordsSets, new LinkedHashSet<>());
-                    if (words.size() == 1) {
-                        result.addAll(words);
-                    } else {
-                        throw new IllegalArgumentException("Could not determine message");
-                    }
-                });
+        int bound = wordsSets.get(0).size();
+        for (int index = 0; index < bound; index++) {
+            Set<String> words = getWordsR(0, index, wordsSets, new LinkedHashSet<>());
+            if (words.size() == 1) {
+                result.addAll(words);
+            } else {
+                throw new NoMessageFoundException();
+            }
+        }
         return String.join(" ", result);
     }
 
@@ -35,7 +37,7 @@ public class MessageUtils {
 
         final int difference = wordsSets.get(setIndex).size() - wordsSets.get(0).size();
         final String word = wordsSets.get(setIndex).get(wordIndex + difference);
-        if (!word.equals("")) {
+        if (!word.isEmpty()) {
             result.add(word);
         }
 

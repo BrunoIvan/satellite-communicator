@@ -1,6 +1,8 @@
-target/
-.idea/
-.mvn/
-messenger.iml
-mvnw
-mvnw.cmd
+satellite-communicator-dto/target
+satellite-communicator-parent/target
+satellite-communicator-rest/target
+satellite-communicator-service/target
+satellite-communicator-utils/target
+satellite-communicator-app/target
+
+.idea

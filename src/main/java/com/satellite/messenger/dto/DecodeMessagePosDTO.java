@@ -1,14 +1,20 @@
-package com.satellite.messenger.pojo;
+package com.satellite.messenger.dto;
 
-public class TopSecretResPosTO {
+import java.io.Serializable;
+
+public class DecodeMessagePosDTO implements Serializable {
 
     private double x;
 
     private double y;
 
-    public TopSecretResPosTO(double x, double y) {
+    public DecodeMessagePosDTO(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public DecodeMessagePosDTO(double[] result) {
+        this(result[0], result[1]);
     }
 
     public double getX() {

@@ -1,6 +1,3 @@
-target/
-.idea/
-.mvn/
-messenger.iml
-mvnw
-mvnw.cmd
+target
+
+.idea

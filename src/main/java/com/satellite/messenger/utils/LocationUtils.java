@@ -1,8 +1,9 @@
 package com.satellite.messenger.utils;
 
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Point;
-import org.springframework.data.util.Pair;
+import com.satellite.messenger.utils.exceptions.location.CircleWithinException;
+import com.satellite.messenger.utils.exceptions.location.EqualCircleException;
+import com.satellite.messenger.utils.exceptions.location.LocationException;
+import com.satellite.messenger.utils.exceptions.location.NotIntersectionException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,112 +12,135 @@ import static java.lang.Math.*;
 
 public class LocationUtils {
 
-    public static double getDistance(final Point pointA, final Point pointB) {
-        final double xB = pointB.getX();
-        final double yB = pointB.getY();
-        final double xA = pointA.getX();
-        final double yA = pointA.getY();
+    protected LocationUtils() {
+    }
+
+    private static double getDistance(final double[] pointA, final double[] pointB) {
+        final double xB = pointB[0];
+        final double yB = pointB[1];
+        final double xA = pointA[0];
+        final double yA = pointA[1];
         return sqrt(pow((xB - xA), 2) + pow((yB - yA), 2));
     }
 
-    public static double round(double value, int places) {
-        if (places < 0) {
-            throw new IllegalArgumentException("Invalid quantity of places");
-        }
-
+    private static double round(
+            double value
+    ) {
         BigDecimal casted = BigDecimal.valueOf(value);
-        return casted.setScale(places, RoundingMode.HALF_UP).doubleValue();
+        return casted.setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
-    private static void checkNoIntersection(final Double distance, final Double radiusA, final Double radiusB) {
+    private static void checkNoIntersection(
+            final Double distance,
+            final Double radiusA,
+            final Double radiusB
+    ) {
         if (distance > (radiusA + radiusB)) {
-            throw new IllegalArgumentException("The circles do not intersect");
+            throw new NotIntersectionException();
         }
     }
 
-    private static void checkWithinCircle(final Double distance, final Double radiusA, final Double radiusB) {
+    private static void checkWithinCircle(
+            final Double distance,
+            final Double radiusA,
+            final Double radiusB
+    ) {
         if (distance < (abs(radiusB - radiusA))) {
-            throw new IllegalArgumentException("One circle is within the other");
+            throw new CircleWithinException();
         }
     }
 
-    private static void checkCoincidentCircle(final Double distance, final Double radiusA, final Double radiusB) {
+    private static void checkCoincidentCircle(
+            final Double distance,
+            final Double radiusA,
+            final Double radiusB
+    ) {
         if (distance.equals(0.) && radiusA.equals(radiusB)) {
-            throw new IllegalArgumentException("The circles are equal");
-        }
-    }
-
-    private static Pair<Point, Point> orderByDegrees(final Point iPoint, final Point jPoint, final Circle aCircle) {
-        final double xA = aCircle.getCenter().getX();
-        final double yA = aCircle.getCenter().getY();
-        final double yIPoint = iPoint.getY();
-        final double yJPoint = jPoint.getY();
-        final double xIPoint = iPoint.getX();
-        final double xJPoint = jPoint.getX();
-        final double iTheta = toDegrees(atan2(yIPoint - yA, xIPoint - xA));
-        final double jTheta = toDegrees(atan2(yJPoint - yA, xJPoint - xA));
-
-        if (jTheta > iTheta) {
-            return Pair.of(jPoint, iPoint);
-        } else {
-            return Pair.of(iPoint, jPoint);
+            throw new EqualCircleException();
         }
     }
 
     /**
      * Returns two points where two circles are intersected.
-     * The solution is taken from the documentation: http://paulbourke.net/geometry/circlesphere/
+     * The solution is taken from the documentation: <a href="http://paulbourke.net/geometry/circlesphere/">...</a>
      */
-    public static Pair<Point, Point> intersectTwoCircles(final Circle aCircle, final Circle bCircle) {
-        final double aRadius = aCircle.getRadius().getValue();
-        final double bRadius = bCircle.getRadius().getValue();
-        final double xA = aCircle.getCenter().getX();
-        final double yA = aCircle.getCenter().getY();
-        final double xB = bCircle.getCenter().getX();
-        final double yB = bCircle.getCenter().getY();
+    private static double[] intersectTwoCircles(
+            final double[] aCircle,
+            final double[] bCircle
+    ) {
+        final double aRadius = aCircle[2];
+        final double bRadius = bCircle[2];
+        final double xA = aCircle[0];
+        final double yA = aCircle[1];
+        final double xB = bCircle[0];
+        final double yB = bCircle[1];
         final double xDistance = xB - xA;
         final double yDistance = yB - yA;
-        final double distance = getDistance(aCircle.getCenter(), bCircle.getCenter());
+        final double distance = getDistance(new double[]{xA, yA}, new double[]{xB, yB});
 
-        checkCoincidentCircle(distance, aRadius, bCircle.getRadius().getValue());
-        checkNoIntersection(distance, aRadius, bCircle.getRadius().getValue());
-        checkWithinCircle(distance, aRadius, bCircle.getRadius().getValue());
+        checkCoincidentCircle(distance, aRadius, bRadius);
+        checkNoIntersection(distance, aRadius, bRadius);
+        checkWithinCircle(distance, aRadius, bRadius);
 
-        final double chorddistance = (pow(aRadius, 2) - pow(bRadius, 2) + pow(distance, 2)) / (distance * 2);
+        final double chorddistance = (pow(aRadius, 2) - pow(bRadius, 2) + pow(distance, 2)) / (abs(distance) * 2);
 
         // distance from 1st circle's centre to the chord between intersects
         final double halfchordlength = sqrt(pow(aRadius, 2) - pow(chorddistance, 2));
-        final double chordmidpointx = xA + (chorddistance * xDistance) / distance;
-        final double chordmidpointy = yA + (chorddistance * yDistance) / distance;
 
-        final double xIPoint = chordmidpointx + (halfchordlength * yDistance) / distance;
-        final double yIPoint = chordmidpointy - (halfchordlength * xDistance) / distance;
-        final Point iPoint = new Point(xIPoint, yIPoint);
+        final double chordmidpointx = xA + (chorddistance * xDistance) / abs(distance);
+        final double chordmidpointy = yA + (chorddistance * yDistance) / abs(distance);
+        final double vX = (halfchordlength * yDistance) / abs(distance);
+        final double vY = (halfchordlength * xDistance) / abs(distance);
 
-        final double xJPoint = chordmidpointx - (halfchordlength * yDistance) / distance;
-        final double yJPoint = chordmidpointy + (halfchordlength * xDistance) / distance;
-        final Point jPoint = new Point(xJPoint, yJPoint);
+        final double xIPoint = chordmidpointx + vX;
+        final double yIPoint = chordmidpointy - vY;
+        final double xJPoint = chordmidpointx - vX;
+        final double yJPoint = chordmidpointy + vY;
 
-        return orderByDegrees(iPoint, jPoint, aCircle);
+        return new double[]{xIPoint, yIPoint, xJPoint, yJPoint};
     }
 
-    private static boolean provePointIntersect(final Point point, final Circle circle) {
-        final double distance = getDistance(point, circle.getCenter());
-        return round(distance, 6) == round(circle.getRadius().getValue(), 6);
+    private static boolean provePointIntersect(
+            final double[] point,
+            final double[] circle
+    ) {
+        final double distance = getDistance(point, circle);
+        return round(distance) == round(circle[2]);
     }
 
     /**
      * Returns one point where three circles are intersected.
      */
-    public static Point intersectThreeCircles(final Circle aCircle, final Circle bCircle, final Circle cCircle) {
-        final Pair<Point, Point> possibleResults = intersectTwoCircles(aCircle, bCircle);
-
-        if (provePointIntersect(possibleResults.getFirst(), cCircle)) {
-            return possibleResults.getFirst();
-        } else if (provePointIntersect(possibleResults.getSecond(), cCircle)) {
-            return possibleResults.getSecond();
+    public static double[] intersectThreeCircles(
+            final double[] aCircle,
+            final double[] bCircle,
+            final double[] cCircle
+    ) {
+        final double[] possibleResults = intersectTwoCircles(aCircle, bCircle);
+        final double firstX = round(possibleResults[0]);
+        final double firstY = round(possibleResults[1]);
+        final double secondX = round(possibleResults[2]);
+        final double secondY = round(possibleResults[3]);
+        double[] first = {firstX, firstY};
+        double[] second = {secondX, secondY};
+        if (provePointIntersect(first, cCircle)) {
+            return first;
+        } else if (provePointIntersect(second, cCircle)) {
+            return second;
         } else {
-            throw new IllegalArgumentException("Could not be able to find any intersection");
+            throw new NotIntersectionException();
         }
+    }
+
+    public static double[] intersectThreeCircles (
+            final double distanceA,
+            final double distanceB,
+            final double distanceC
+    ) {
+        return intersectThreeCircles(
+                new double[]{Constants.AX, Constants.AY, distanceA},
+                new double[]{Constants.BX, Constants.BY, distanceB},
+                new double[]{Constants.CX, Constants.CY, distanceC}
+        );
     }
 }

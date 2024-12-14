@@ -6,16 +6,16 @@ import com.satellite.messenger.app.exceptions.location.NotIntersectionException;
 
 import static java.lang.Math.*;
 
-public class CircleDTO implements Locable {
+public class Circle implements Locable {
 
-    private final PointDTO point;
+    private final Point point;
 
     private final Double radio;
 
     private final Double radioPow;
 
-    public CircleDTO(Double x, Double y, Double radio) {
-        this.point = new PointDTO(x, y);
+    public Circle(Double x, Double y, Double radio) {
+        this.point = new Point(x, y);
         this.radio = radio;
         this.radioPow = radio * radio;
     }
@@ -66,67 +66,67 @@ public class CircleDTO implements Locable {
     }
 
     public void checkNoIntersection(
-            final CircleDTO circleDTO
+            final Circle circle
     ) {
-        final Double distance = getDistance(circleDTO);
-        if (distance > (radio + circleDTO.getRadio())) {
+        final Double distance = getDistance(circle);
+        if (distance > (radio + circle.getRadio())) {
             throw new NotIntersectionException();
         }
     }
 
     public void checkWithinCircle(
-            final CircleDTO circleDTO
+            final Circle circle
     ) {
-        final Double distance = getDistance(circleDTO);
-        if (distance < (abs(circleDTO.getRadio() - radio))) {
+        final Double distance = getDistance(circle);
+        if (distance < (abs(circle.getRadio() - radio))) {
             throw new CircleWithinException();
         }
     }
 
     public void checkCoincidentCircle(
-            final CircleDTO circleDTO
+            final Circle circle
     ) {
-        final Double distance = getDistance(circleDTO);
-        if (distance.equals(0.) && radio.equals(circleDTO.getRadio())) {
+        final Double distance = getDistance(circle);
+        if (distance.equals(0.) && radio.equals(circle.getRadio())) {
             throw new EqualCircleException();
         }
     }
 
-    public double chordDistance(final CircleDTO circleDTO) {
-        final Double distance = getDistance(circleDTO);
-        return (radioPow - circleDTO.radioPow + pow(distance, 2)) / (abs(distance) * 2);
+    public double chordDistance(final Circle circle) {
+        final Double distance = getDistance(circle);
+        return (radioPow - circle.radioPow + pow(distance, 2)) / (abs(distance) * 2);
     }
 
-    public double halfChordLength(final CircleDTO circleDTO) {
-        final double chordDistance = chordDistance(circleDTO);
+    public double halfChordLength(final Circle circle) {
+        final double chordDistance = chordDistance(circle);
         return sqrt(radioPow - pow(chordDistance, 2));
     }
 
-    public double chordMidPointX(final CircleDTO circleDTO) {
-        final double distance = getDistance(circleDTO);
-        final double xDistance = getXDistance(circleDTO);
-        final double chordDistance = chordDistance(circleDTO);
+    public double chordMidPointX(final Circle circle) {
+        final double distance = getDistance(circle);
+        final double xDistance = getXDistance(circle);
+        final double chordDistance = chordDistance(circle);
         return point.getX() + (chordDistance * xDistance) / abs(distance);
     }
 
-    public double chordMidPointY(final CircleDTO circleDTO) {
-        final double distance = getDistance(circleDTO);
-        final double yDistance = getYDistance(circleDTO);
-        final double chordDistance = chordDistance(circleDTO);
+    public double chordMidPointY(final Circle circle) {
+        final double distance = getDistance(circle);
+        final double yDistance = getYDistance(circle);
+        final double chordDistance = chordDistance(circle);
         return point.getY() + (chordDistance * yDistance) / abs(distance);
     }
     
-    public double xVector(final CircleDTO circleDTO) {
-        final double distance = getDistance(circleDTO);
-        final double yDistance = getYDistance(circleDTO);
-        final double halfChordLength = halfChordLength(circleDTO);
+    public double xVector(final Circle circle) {
+        final double distance = getDistance(circle);
+        final double yDistance = getYDistance(circle);
+        final double halfChordLength = halfChordLength(circle);
         return (halfChordLength * yDistance) / abs(distance);
     }
 
-    public double yVector(final CircleDTO circleDTO) {
-        final double distance = getDistance(circleDTO);
-        final double xDistance = getXDistance(circleDTO);
-        final double halfChordLength = halfChordLength(circleDTO);
+    public double yVector(final Circle circle) {
+        final double distance = getDistance(circle);
+        final double xDistance = getXDistance(circle);
+        final double halfChordLength = halfChordLength(circle);
         return (halfChordLength * xDistance) / abs(distance);
     }
 

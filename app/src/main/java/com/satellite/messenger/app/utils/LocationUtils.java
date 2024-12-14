@@ -1,14 +1,12 @@
 package com.satellite.messenger.app.utils;
 
-import com.satellite.messenger.app.dto.CircleDTO;
+import com.satellite.messenger.app.dto.Circle;
 import com.satellite.messenger.app.dto.Locable;
-import com.satellite.messenger.app.dto.PointDTO;
+import com.satellite.messenger.app.dto.Point;
 import com.satellite.messenger.app.exceptions.location.NotIntersectionException;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.lang.Math.pow;
 
 public class LocationUtils {
 
@@ -27,8 +25,8 @@ public class LocationUtils {
     }
 
     private static Set<Locable> getCircleIntersections(
-            final CircleDTO aCircle,
-            final CircleDTO bCircle
+            final Circle aCircle,
+            final Circle bCircle
     ) {
         aCircle.checkCoincidentCircle(bCircle);
         aCircle.checkNoIntersection(bCircle);
@@ -44,8 +42,8 @@ public class LocationUtils {
         final double jY = chordMidPointY + yVector;
 
         final Set<Locable> results = new HashSet<>();
-        results.add(new PointDTO(iX, iY));
-        results.add(new PointDTO(jX, jY));
+        results.add(new Point(iX, iY));
+        results.add(new Point(jX, jY));
         return results;
     }
 
@@ -54,17 +52,17 @@ public class LocationUtils {
      * The solution is taken from the following <a href="http://paulbourke.net/geometry/circlesphere/">documentation</a>.
      */
     public static Locable intersectThreeCircles(
-            final CircleDTO aCircle,
-            final CircleDTO bCircle,
-            final CircleDTO cCircle
+            final Circle aCircle,
+            final Circle bCircle,
+            final Circle cCircle
     ) {
         return intersectThreeCircles(aCircle, bCircle, cCircle, DEFAULT_ROUND);
     }
 
     public static Locable intersectThreeCircles(
-            final CircleDTO aCircle,
-            final CircleDTO bCircle,
-            final CircleDTO cCircle,
+            final Circle aCircle,
+            final Circle bCircle,
+            final Circle cCircle,
             final Integer round
     ) {
         final Set<Locable> possibleResults = getCircleIntersections(aCircle, bCircle);
@@ -82,9 +80,9 @@ public class LocationUtils {
             final double distanceC
     ) {
         return intersectThreeCircles(
-                new CircleDTO(Constants.AX, Constants.AY, distanceA),
-                new CircleDTO(Constants.BX, Constants.BY, distanceB),
-                new CircleDTO(Constants.CX, Constants.CY, distanceC)
+                new Circle(Constants.AX, Constants.AY, distanceA),
+                new Circle(Constants.BX, Constants.BY, distanceB),
+                new Circle(Constants.CX, Constants.CY, distanceC)
         );
     }
 }

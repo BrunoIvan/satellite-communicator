@@ -1,6 +1,6 @@
 package com.satellite.messenger.app.utils;
 
-import com.satellite.messenger.app.dto.CircleDTO;
+import com.satellite.messenger.app.dto.Circle;
 import com.satellite.messenger.app.dto.Locable;
 import com.satellite.messenger.app.exceptions.location.CircleWithinException;
 import com.satellite.messenger.app.exceptions.location.EqualCircleException;
@@ -18,9 +18,9 @@ public class LocationUtilsTest {
     }
 
     public static void when_intersectThreeCircles_then_ResultIsOk() {
-        final CircleDTO circleA = new CircleDTO((double) -500, (double) -200, (double) 600);
-        final CircleDTO circleB = new CircleDTO((double) 100, (double) -100, 115.5);
-        final CircleDTO circleC = new CircleDTO((double) 170, (double) -300, 109.856054);
+        final Circle circleA = new Circle((double) -500, (double) -200, (double) 600);
+        final Circle circleB = new Circle((double) 100, (double) -100, 115.5);
+        final Circle circleC = new Circle((double) 170, (double) -300, 109.856054);
         final Locable result = LocationUtils.intersectThreeCircles(circleA, circleB, circleC);
 
         final double expectedX = 99.80;
@@ -37,9 +37,9 @@ public class LocationUtilsTest {
     }
 
     public static void when_intersectThreeCircles_and_thereIsAThreeRoundParameterValue_then_ResultIsOk() {
-        final CircleDTO circleA = new CircleDTO((double) -500, (double) -200, (double) 600);
-        final CircleDTO circleB = new CircleDTO((double) 100, (double) -100, 115.5);
-        final CircleDTO circleC = new CircleDTO((double) 170, (double) -300, 109.856054);
+        final Circle circleA = new Circle((double) -500, (double) -200, (double) 600);
+        final Circle circleB = new Circle((double) 100, (double) -100, 115.5);
+        final Circle circleC = new Circle((double) 170, (double) -300, 109.856054);
         final Locable result = LocationUtils.intersectThreeCircles(circleA, circleB, circleC, 3);
 
         final double expectedX = 99.8;
@@ -56,9 +56,9 @@ public class LocationUtilsTest {
     }
 
     public static void when_intersectThreeCircles_then_NotIntersectionException() {
-        final CircleDTO circleA = new CircleDTO((double) -500, (double) -200, (double) 600);
-        final CircleDTO circleB = new CircleDTO((double) 100, (double) -100, 115.5);
-        final CircleDTO circleC = new CircleDTO((double) 170, (double) -300, (double) 250);
+        final Circle circleA = new Circle((double) -500, (double) -200, (double) 600);
+        final Circle circleB = new Circle((double) 100, (double) -100, 115.5);
+        final Circle circleC = new Circle((double) 170, (double) -300, (double) 250);
         try {
             LocationUtils.intersectThreeCircles(circleA, circleB, circleC);
             throw new AssertionError("Expected NotIntersectionException to be thrown, but it was not.");
@@ -68,9 +68,9 @@ public class LocationUtilsTest {
     }
 
     public static void when_intersectThreeCircles_then_CircleWithinException() {
-        final CircleDTO circleA = new CircleDTO((double) -500, (double) -200, (double) 600);
-        final CircleDTO circleB = new CircleDTO((double) -240, (double) -450, 115.5);
-        final CircleDTO circleC = new CircleDTO((double) 170, (double) -300, (double) 250);
+        final Circle circleA = new Circle((double) -500, (double) -200, (double) 600);
+        final Circle circleB = new Circle((double) -240, (double) -450, 115.5);
+        final Circle circleC = new Circle((double) 170, (double) -300, (double) 250);
         try {
             LocationUtils.intersectThreeCircles(circleA, circleB, circleC);
             throw new AssertionError("Expected CircleWithinException to be thrown, but it was not.");
@@ -80,9 +80,9 @@ public class LocationUtilsTest {
     }
 
     public static void when_intersectThreeCircles_then_EqualCircleException() {
-        final CircleDTO circleA = new CircleDTO((double) -500, (double) -200, (double) 600);
-        final CircleDTO circleB = new CircleDTO((double) -500, (double) -200, (double) 600);
-        final CircleDTO circleC = new CircleDTO((double) 170, (double) -300, (double) 250);
+        final Circle circleA = new Circle((double) -500, (double) -200, (double) 600);
+        final Circle circleB = new Circle((double) -500, (double) -200, (double) 600);
+        final Circle circleC = new Circle((double) 170, (double) -300, (double) 250);
         try {
             LocationUtils.intersectThreeCircles(circleA, circleB, circleC);
             throw new AssertionError("Expected EqualCircleException to be thrown, but it was not.");
@@ -92,9 +92,9 @@ public class LocationUtilsTest {
     }
 
     public static void when_intersectThreeCircles_and_TwoCirclesDoNotIntersects_then_NotIntersectionException() {
-        final CircleDTO circleA = new CircleDTO((double) -500, (double) -200, (double) 200);
-        final CircleDTO circleB = new CircleDTO((double) -240, (double) -450, 115.5);
-        final CircleDTO circleC = new CircleDTO((double) 170, (double) -300, (double) 250);
+        final Circle circleA = new Circle((double) -500, (double) -200, (double) 200);
+        final Circle circleB = new Circle((double) -240, (double) -450, 115.5);
+        final Circle circleC = new Circle((double) 170, (double) -300, (double) 250);
         try {
             LocationUtils.intersectThreeCircles(circleA, circleB, circleC);
             throw new AssertionError("Expected NotIntersectionException to be thrown, but it was not.");

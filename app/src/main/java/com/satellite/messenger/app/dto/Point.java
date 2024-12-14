@@ -3,13 +3,13 @@ package com.satellite.messenger.app.dto;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
-public class PointDTO implements Locable {
+public class Point implements Locable {
 
     private Double x;
 
     private Double y;
 
-    public PointDTO(Double x, Double y) {
+    public Point(Double x, Double y) {
         this.x = x;
         this.y = y;
     }

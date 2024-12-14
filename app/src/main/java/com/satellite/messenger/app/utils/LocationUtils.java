@@ -1,9 +1,9 @@
 package com.satellite.messenger.app.utils;
 
-import com.satellite.messenger.app.dto.CircleDTO;
-import com.satellite.messenger.app.dto.Locable;
-import com.satellite.messenger.app.dto.PointDTO;
-import com.satellite.messenger.app.exceptions.location.NotIntersectionException;
+import com.satellite.messenger.domain.dto.CircleDTO;
+import com.satellite.messenger.domain.dto.Locable;
+import com.satellite.messenger.domain.dto.PointDTO;
+import com.satellite.messenger.domain.exceptions.location.NotIntersectionException;
 
 import java.util.HashSet;
 import java.util.Set;

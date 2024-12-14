@@ -1,10 +1,10 @@
 package com.satellite.messenger.app.utils;
 
-import com.satellite.messenger.app.dto.CircleDTO;
-import com.satellite.messenger.app.dto.Locable;
-import com.satellite.messenger.app.exceptions.location.CircleWithinException;
-import com.satellite.messenger.app.exceptions.location.EqualCircleException;
-import com.satellite.messenger.app.exceptions.location.NotIntersectionException;
+import com.satellite.messenger.domain.dto.CircleDTO;
+import com.satellite.messenger.domain.dto.Locable;
+import com.satellite.messenger.domain.exceptions.location.CircleWithinException;
+import com.satellite.messenger.domain.exceptions.location.EqualCircleException;
+import com.satellite.messenger.domain.exceptions.location.NotIntersectionException;
 
 public class LocationUtilsTest {
 

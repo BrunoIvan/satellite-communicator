@@ -8,6 +8,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>app</module>
+		<module>domain</module>
 	</modules>
 	<properties>
 		<build.plugins.plugin.version>4.0.0-beta-1</build.plugins.plugin.version>

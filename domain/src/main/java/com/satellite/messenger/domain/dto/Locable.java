@@ -1,4 +1,4 @@
-package com.satellite.messenger.app.dto;
+package com.satellite.messenger.domain.dto;
 
 import java.text.DecimalFormat;
 

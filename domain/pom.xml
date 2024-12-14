@@ -7,12 +7,5 @@
 		<artifactId>decoder</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>decoder-app</artifactId>
-	<dependencies>
-		<dependency>
-			<groupId>com.satellite.message</groupId>
-			<artifactId>decoder-domain</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
+	<artifactId>decoder-domain</artifactId>
 </project>

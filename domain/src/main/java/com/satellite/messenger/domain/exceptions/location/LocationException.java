@@ -1,4 +1,4 @@
-package com.satellite.messenger.app.exceptions.location;
+package com.satellite.messenger.domain.exceptions.location;
 
 public class LocationException extends RuntimeException {
 }

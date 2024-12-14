@@ -1,8 +1,8 @@
-package com.satellite.messenger.app.dto;
+package com.satellite.messenger.domain.dto;
 
-import com.satellite.messenger.app.exceptions.location.CircleWithinException;
-import com.satellite.messenger.app.exceptions.location.EqualCircleException;
-import com.satellite.messenger.app.exceptions.location.NotIntersectionException;
+import com.satellite.messenger.domain.exceptions.location.CircleWithinException;
+import com.satellite.messenger.domain.exceptions.location.EqualCircleException;
+import com.satellite.messenger.domain.exceptions.location.NotIntersectionException;
 
 import static java.lang.Math.*;
 

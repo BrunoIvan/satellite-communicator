@@ -1,7 +1,8 @@
 # satellite-communicator
 
-Plataforma de la aplicación:
-- Java 17
+Application platform:
+Java JDK 17.0.9
+Maven 4.0.0-beta-3
 
 Cómo ejecutar la aplicacion:
 - Generar el compilado de la aplicación con "mvn clean install",

@@ -1,8 +1,0 @@
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/dto/CircleDTO.java
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/dto/Locable.java
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/dto/PointDTO.java
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/exceptions/location/CircleWithinException.java
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/exceptions/location/EqualCircleException.java
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/exceptions/location/LocationException.java
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/exceptions/location/NotIntersectionException.java
-/home/brunoivan/Proyectos/satellite-communicator/app/src/main/java/com/satellite/messenger/app/utils/LocationUtils.java

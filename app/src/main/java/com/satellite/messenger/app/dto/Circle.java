@@ -24,45 +24,29 @@ public class Circle implements Locable {
         return radio;
     }
 
+    @Override
     public Double getX() {
         return point.getX();
     }
 
-    public void setX(Double x) {
-        point.setX(x);
-    }
-
-    public void moveX(Double x) {
-        point.moveX(x);
-    }
-
+    @Override
     public Double getY() {
         return point.getY();
     }
 
-    public void setY(Double y) {
-        point.setY(y);
-    }
-
-    public void moveY(Double y) {
-        point.moveY(y);
-    }
-
+    @Override
     public Double getXDistance(final Locable locable) {
         return point.getXDistance(locable);
     }
 
+    @Override
     public Double getYDistance(final Locable locable) {
         return point.getYDistance(locable);
     }
 
+    @Override
     public Double getDistance(final Locable locable) {
         return point.getDistance(locable);
-    }
-
-    @Override
-    public void round(int decimals) {
-        point.round(decimals);
     }
 
     public void checkNoIntersection(
@@ -87,7 +71,8 @@ public class Circle implements Locable {
             final Circle circle
     ) {
         final Double distance = getDistance(circle);
-        if (distance.equals(0.) && radio.equals(circle.getRadio())) {
+        final Double radioDistance = circle.getRadio() - radio;
+        if (distance + radioDistance == 0) {
             throw new EqualCircleException();
         }
     }

@@ -3,6 +3,7 @@ package com.satellite.messenger.app.utils;
 import com.satellite.messenger.app.dto.Circle;
 import com.satellite.messenger.app.dto.Locable;
 import com.satellite.messenger.app.dto.Point;
+import com.satellite.messenger.app.dto.Roundable;
 import com.satellite.messenger.app.exceptions.location.NotIntersectionException;
 
 import java.util.HashSet;
@@ -28,7 +29,6 @@ public class LocationUtils {
             final Circle aCircle,
             final Circle bCircle
     ) {
-        aCircle.checkCoincidentCircle(bCircle);
         aCircle.checkNoIntersection(bCircle);
         aCircle.checkWithinCircle(bCircle);
 
@@ -47,6 +47,25 @@ public class LocationUtils {
         return results;
     }
 
+    public static Locable intersectThreeCircles(
+            final Circle aCircle,
+            final Circle bCircle,
+            final Circle cCircle,
+            final Integer round
+    ) {
+        aCircle.checkCoincidentCircle(bCircle);
+        aCircle.checkCoincidentCircle(cCircle);
+
+        final Set<Locable> possibleResults = getCircleIntersections(aCircle, bCircle);
+        Roundable result = possibleResults.stream()
+                .filter(cCircle::intersects)
+                .findAny()
+                .map(Roundable. class::cast)
+                .orElseThrow(NotIntersectionException::new);
+        result.round(round);
+        return result;
+    }
+
     /**
      * Returns one point where three circles are intersected.
      * The solution is taken from the following <a href="http://paulbourke.net/geometry/circlesphere/">documentation</a>.
@@ -57,21 +76,6 @@ public class LocationUtils {
             final Circle cCircle
     ) {
         return intersectThreeCircles(aCircle, bCircle, cCircle, DEFAULT_ROUND);
-    }
-
-    public static Locable intersectThreeCircles(
-            final Circle aCircle,
-            final Circle bCircle,
-            final Circle cCircle,
-            final Integer round
-    ) {
-        final Set<Locable> possibleResults = getCircleIntersections(aCircle, bCircle);
-        Locable result = possibleResults.stream()
-                .filter(cCircle::intersects)
-                .findAny()
-                .orElseThrow(NotIntersectionException::new);
-        result.round(round);
-        return result;
     }
 
     public static Locable intersectThreeCircles (

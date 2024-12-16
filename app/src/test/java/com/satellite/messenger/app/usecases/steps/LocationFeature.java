@@ -1,4 +1,4 @@
-package com.satellite.messenger.app.cucumber.steps;
+package com.satellite.messenger.app.usecases.steps;
 
 import com.satellite.messenger.app.dto.Circle;
 import com.satellite.messenger.app.dto.Locable;

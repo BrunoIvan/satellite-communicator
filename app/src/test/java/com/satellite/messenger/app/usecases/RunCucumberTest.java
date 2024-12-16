@@ -1,4 +1,4 @@
-package com.satellite.messenger.app.cucumber;
+package com.satellite.messenger.app.usecases;
 
 import org.junit.runner.RunWith;
 import io.cucumber.junit.Cucumber;
